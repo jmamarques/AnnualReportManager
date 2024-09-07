@@ -26,7 +26,7 @@ public class JobCompletionNotificationListener implements JobExecutionListener {
             log.info("!!! JOB FINISHED! Time to verify the results");
 
             jdbcTemplate
-                    .query("SELECT id, date_utc, pair, side, price, executed_amount, executed_currency, " +
+                    .query("SELECT distinct date_utc, pair, side, price, executed_amount, executed_currency, " +
                                     "amount_amount, amount_currency, fee_amount, fee_currency " +
                                     "FROM crypto_transaction",
                             (rs, rowNum) -> new CryptoTransactionRowMapper().mapRow(rs, rowNum))
