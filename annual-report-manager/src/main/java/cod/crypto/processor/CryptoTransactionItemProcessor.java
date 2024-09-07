@@ -1,6 +1,6 @@
-package cod.batch.processor;
+package cod.crypto.processor;
 
-import cod.batch.model.CryptoTransaction;
+import cod.crypto.model.CryptoTransaction;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.item.ItemProcessor;
 

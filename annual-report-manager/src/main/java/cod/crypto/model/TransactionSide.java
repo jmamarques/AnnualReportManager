@@ -1,4 +1,4 @@
-package cod.batch.model;
+package cod.crypto.model;
 
 public enum TransactionSide {
     BUY,
