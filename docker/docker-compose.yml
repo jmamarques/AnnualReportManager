@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  # Spring Boot Application
+  app:
+    image: annual-report-manager:latest
+    container_name: annual-report-manager
+    build:
+      context: ../annual-report-manager
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data/incoming
+    environment:
+        - "COD_DIRECTORY=/data/incoming"
+        - "COD_FILEFORMAT=csv"
+        - "COD_BATCHSIZE=100"
+        - "COD_REPORT=/data/report"
+    networks:
+      - elk
+    depends_on:
+      - db
+
+  # PostgreSQL Database
+  db:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: wallet
+      POSTGRES_PASSWORD: secretWallet
+      POSTGRES_DB: qualification
+    ports:
+      - "5432:5432"
+    networks:
+      - elk
+
+networks:
+  elk:
+    driver: bridge
+
+volumes:
+  esdata:
+    driver: local

@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  postgres:
+    build: .
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: wallet
+      POSTGRES_PASSWORD: secretWallet
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - pgnetwork
+
+networks:
+  pgnetwork:
+    driver: bridge
