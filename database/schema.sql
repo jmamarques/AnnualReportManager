@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS crypto_transaction (
                                                   fee_currency VARCHAR(10)
 );
 
+ALTER TABLE crypto_transaction
+    ADD CONSTRAINT unique_transaction UNIQUE (date_utc,pair,side,price,executed_amount,executed_currency,amount_amount,amount_currency,fee_amount,fee_currency);
+
 CREATE TABLE IF NOT EXISTS  BATCH_JOB_INSTANCE  (
                                                     JOB_INSTANCE_ID BIGINT  NOT NULL PRIMARY KEY ,
                                                     VERSION BIGINT ,
@@ -112,6 +115,10 @@ CREATE TABLE IF NOT EXISTS crypto_transaction (
                                                   fee_amount DECIMAL(20, 10),
                                                   fee_currency VARCHAR(10)
 );
+
+ALTER TABLE crypto_transaction
+    ADD CONSTRAINT unique_transaction UNIQUE (date_utc,pair,side,price,executed_amount,executed_currency,amount_amount,amount_currency,fee_amount,fee_currency);
+
 
 CREATE TABLE IF NOT EXISTS  BATCH_JOB_INSTANCE  (
                                                     JOB_INSTANCE_ID BIGINT  NOT NULL PRIMARY KEY ,
