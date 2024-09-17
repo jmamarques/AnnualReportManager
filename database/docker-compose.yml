@@ -1,20 +1,20 @@
 version: '3.8'
 services:
-  postgres:
-    build: .
-    container_name: postgres-db
+  mysql:
+    image: mysql:latest
+    container_name: mysql-db
     environment:
-      POSTGRES_USER: wallet
-      POSTGRES_PASSWORD: secretWallet
+      MYSQL_ROOT_PASSWORD: secretWallet
+      MYSQL_DATABASE: wallet
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
       - ./schema.sql:/docker-entrypoint-initdb.d/02_schema.sql
       - ./functions.sql:/docker-entrypoint-initdb.d/03_functions.sql
     networks:
-      - pgnetwork
+      - dbnetwork
 
 networks:
-  pgnetwork:
+  dbnetwork:
     driver: bridge

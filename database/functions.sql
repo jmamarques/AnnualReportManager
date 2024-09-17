@@ -1,24 +1,22 @@
--- Connect to the production database and create the wallet schema
-\connect production;
+USE cod;
 
--- Connect to the qualification database and create the wallet schema
-\connect qualification;
-CREATE OR REPLACE FUNCTION insert_crypto_transaction(
-    p_date_utc TIMESTAMP,
-    p_pair TEXT,
-    p_side TEXT,
-    p_price NUMERIC,
-    p_executed_amount NUMERIC,
-    p_executed_currency TEXT,
-    p_amount_amount NUMERIC,
-    p_amount_currency TEXT,
-    p_fee_amount NUMERIC,
-    p_fee_currency TEXT
+-- Create Procedure
+DELIMITER $$
+
+CREATE PROCEDURE insert_crypto_transaction(
+    IN p_date_utc TIMESTAMP,
+    IN p_pair VARCHAR(255),
+    IN p_side ENUM('BUY', 'SELL'),
+    IN p_price DECIMAL(20, 10),
+    IN p_executed_amount DECIMAL(20, 10),
+    IN p_executed_currency VARCHAR(10),
+    IN p_amount_amount DECIMAL(20, 10),
+    IN p_amount_currency VARCHAR(10),
+    IN p_fee_amount DECIMAL(20, 10),
+    IN p_fee_currency VARCHAR(10)
 )
-    RETURNS VOID AS
-$$
 BEGIN
-    -- Check if a transaction with the same date_utc, pair, and side already exists
+    -- Check if a transaction with the same date_utc, pair, side, and price exists
     IF NOT EXISTS (
         SELECT 1
         FROM crypto_transaction
@@ -34,11 +32,29 @@ BEGIN
           AND fee_currency = p_fee_currency
     ) THEN
         -- Insert the new transaction if no matching record is found
-        INSERT INTO crypto_transaction (date_utc, pair, side, price, executed_amount, executed_currency,
-                                        amount_amount, amount_currency, fee_amount, fee_currency)
-        VALUES (p_date_utc, p_pair, p_side, p_price, p_executed_amount, p_executed_currency,
-                p_amount_amount, p_amount_currency, p_fee_amount, p_fee_currency);
+        INSERT INTO crypto_transaction (
+            date_utc, pair, side, price, executed_amount, executed_currency,
+            amount_amount, amount_currency, fee_amount, fee_currency
+        )
+        VALUES (
+                   p_date_utc, p_pair, p_side, p_price, p_executed_amount, p_executed_currency,
+                   p_amount_amount, p_amount_currency, p_fee_amount, p_fee_currency
+               );
     END IF;
-END;
-$$
-    LANGUAGE plpgsql;
+END$$
+
+DELIMITER ;
+
+-- ====================
+-- Grant Permissions
+-- ====================
+
+-- Grant full privileges (read/write) to writer_user
+GRANT EXECUTE ON PROCEDURE cod.insert_crypto_transaction TO 'writer_user'@'%';
+GRANT ALL PRIVILEGES ON cod.crypto_transaction TO 'writer_user'@'%';
+
+-- Grant read-only (SELECT) permissions to reader_user
+GRANT SELECT ON cod.crypto_transaction TO 'reader_user'@'%';
+
+-- Apply privileges
+FLUSH PRIVILEGES;

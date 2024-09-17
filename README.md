@@ -20,7 +20,7 @@ This project is a Spring Boot application that manages and organizes transaction
 
 - **File Processing**: Monitors a directory for incoming report files, processes them, and stores them in a database.
 - **REST API**: Provides endpoints for CRUD operations related to annual reports.
-- **Database**: Integrated with PostgreSQL for data persistence.
+- **Database**: Integrated with MySQL for data persistence.
 - **Logging and Observability**:
     - **Logstash**: Sends logs to Logstash for processing.
     - **Elasticsearch**: Stores logs and makes them searchable.
@@ -75,7 +75,7 @@ This will start:
 - **Logstash** on port `5000`
 - **Kibana** on port `5601`
 - **Prometheus** on port `9090`
-- **PostgreSQL** on port `5432`
+- **MySQL** on port `3306`
 
 ### 4. Environment Configuration
 
@@ -84,10 +84,10 @@ Ensure your environment is properly configured by checking the `application.prop
 #### Sample `application.properties`
 
 ```properties
-# PostgreSQL
-spring.datasource.url=jdbc:postgresql://db:5432/production
-spring.datasource.username=wallet
-spring.datasource.password=secretWallet
+# MySQL
+spring.datasource.url=jdbc:mysql://db:3306/production
+spring.datasource.username=writer_user
+spring.datasource.password=writerPassword
 
 # Actuator
 management.endpoints.web.exposure.include=*
