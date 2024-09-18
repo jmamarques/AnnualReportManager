@@ -1,6 +1,7 @@
 package cod.crypto.config;
 
 import cod.configuration.CodProperties;
+import cod.crypto.listener.FileDeletingStepListener;
 import cod.crypto.listener.JobCompletionNotificationListener;
 import cod.crypto.model.CryptoTransaction;
 import cod.crypto.processor.CryptoTransactionFieldSetMapper;
@@ -32,6 +33,10 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 @Configuration
 @EnableBatchProcessing
@@ -84,8 +89,7 @@ public class CryptoTransactionBatchConfig {
     public JdbcBatchItemWriter<CryptoTransaction> writerDb(DataSource dataSource) {
         return new JdbcBatchItemWriterBuilder<CryptoTransaction>()
                 .dataSource(dataSource)
-                .sql("INSERT INTO crypto_transaction (date_utc, pair, side, price, executed_amount, executed_currency, " +
-                        "amount_amount, amount_currency, fee_amount, fee_currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                .sql("call insert_crypto_transaction(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 .itemPreparedStatementSetter((cryptoTransaction, ps) -> CryptoTransactionRepository.CryptoTransactionPrepareStatement(ps, cryptoTransaction))
                 .itemSqlParameterSourceProvider(BeanPropertySqlParameterSource::new)
                 .beanMapped()
@@ -106,7 +110,7 @@ public class CryptoTransactionBatchConfig {
     public FlatFileItemWriter<CryptoTransaction> writerFlat() {
         return new FlatFileItemWriterBuilder<CryptoTransaction>()
                 .name("cryptoTransactionItemWriter") // Name of the writer
-                .resource(new FileSystemResource(codProperties.getReport() + "/processed-transactions.csv")) // Output file location
+                .resource(new FileSystemResource(codProperties.getReport() + "/processed-transactions"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss"))+".csv")) // Output file location
                 .delimited() // Set the format as delimited (CSV)
                 .names("dateUtc", "pair", "side", "price", "executed", "amount", "fee") // Column names
                 .shouldDeleteIfExists(true)
@@ -133,6 +137,7 @@ public class CryptoTransactionBatchConfig {
                 .reader(reader)
                 .processor(processor)
                 .writer(writerDb)
+                .listener(new FileDeletingStepListener())
                 .build();
     }
 
