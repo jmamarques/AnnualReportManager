@@ -20,6 +20,7 @@ public class FileDeletingStepListener implements JobExecutionListener {
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
             String filePath = jobExecution.getJobParameters().getString("filePath");
             try {
+                assert filePath != null;
                 Path file = Paths.get(filePath);
                 if (Files.exists(file)) {
                     Files.delete(file);

@@ -33,10 +33,8 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 @Configuration
 @EnableBatchProcessing
@@ -110,7 +108,7 @@ public class CryptoTransactionBatchConfig {
     public FlatFileItemWriter<CryptoTransaction> writerFlat() {
         return new FlatFileItemWriterBuilder<CryptoTransaction>()
                 .name("cryptoTransactionItemWriter") // Name of the writer
-                .resource(new FileSystemResource(codProperties.getReport() + "/processed-transactions"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss"))+".csv")) // Output file location
+                .resource(new FileSystemResource(codProperties.getReport() + "/processed-transactions" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")) + ".csv")) // Output file location
                 .delimited() // Set the format as delimited (CSV)
                 .names("dateUtc", "pair", "side", "price", "executed", "amount", "fee") // Column names
                 .shouldDeleteIfExists(true)
